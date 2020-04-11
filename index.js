@@ -1,4 +1,5 @@
 const electron = require("electron");
+const uuid = require("uuid").v4;
 
 const {
     app,
@@ -11,6 +12,7 @@ let todayWindow;
 let createWindow;
 let listWindow;
 
+let allAppointment = [];
 
 app.on("ready", () => {
     todayWindow = new BrowserWindow({
@@ -20,7 +22,7 @@ app.on("ready", () => {
         title: "Tutorial Electron"
     });
 
-    todayWindow.loadURL(`File://${__dirname}/today.html`);
+    todayWindow.loadURL(`file://${__dirname}/today.html`);
     todayWindow.on("closed", () => {
 
         app.quit()
@@ -43,7 +45,7 @@ const listWindowCreator = () => {
     });
 
     listWindow.setMenu(null);
-    listWindow.loadURL(`File://${__dirname}/list.html`);
+    listWindow.loadURL(`file://${__dirname}/list.html`);
     listWindow.on("closed", () => (listWindow = null));
 };
 
@@ -58,16 +60,21 @@ const createWindowCreator = () => {
     });
 
     createWindow.setMenu(null);
-    createWindow.loadURL(`File://${__dirname}/create.html`);
+    createWindow.loadURL(`file://${__dirname}/create.html`);
     createWindow.on("closed", () => (createWindow = null));
 };
 
 ipcMain.on("appointment:create", (event, appointment) => {
-    console.log(appointment);
-});
+    appointment["id"] = uuid();
+    appointment["done"] = 0;
+    allAppointment.push(appointment);
 
+    createWindow.close();
+
+    console.log(allAppointment);
+});
 ipcMain.on("appointment:request:list", event => {
-    console.log("here");
+    listWindow.webContents.send('appointment:response:list', allAppointment);
 });
 ipcMain.on("appointment:request:today", event => {
     console.log("here2");
@@ -77,7 +84,7 @@ ipcMain.on("appointment:done", (event, id) => {
 });
 
 const menuTemplate = [{
-        label: "File",
+        label: "file",
         submenu: [{
                 label: "New Appointments",
 
