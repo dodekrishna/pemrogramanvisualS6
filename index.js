@@ -36,7 +36,7 @@ app.on("ready", () => {
         const jsonAppointment = JSON.stringify(allAppointment);
         fs.writeFileSync("db.json", jsonAppointment);
 
-        app.quit()
+        app.quit();
         todayWindow = null;
     });
 
@@ -90,6 +90,7 @@ ipcMain.on("appointment:request:list", event => {
 ipcMain.on("appointment:request:today", event => {
     sendTodayAppointments();
 });
+
 ipcMain.on("appointment:done", (event, id) => {
     allAppointment.forEach((appointment) => {
         appointment.done = 1;
@@ -107,7 +108,7 @@ const sendTodayAppointments = () => {
 };
 
 const menuTemplate = [{
-        label: "file",
+        label: "File",
         submenu: [{
                 label: "New Appointments",
 
